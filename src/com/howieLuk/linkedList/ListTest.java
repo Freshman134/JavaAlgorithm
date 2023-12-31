@@ -10,8 +10,9 @@ import java.util.Objects;
  **/
 public class ListTest {
     public static void main(String[] args) {
-        linkedListTest();
-        doubleLinkedListTest();
+//        linkedListTest();
+//        doubleLinkedListTest();
+        testCycleLinkedList();
     }
 
     private static void linkedListTest() {
@@ -115,6 +116,20 @@ public class ListTest {
         System.out.println(list.remove(new ClassA(list.size() - 2)));
         System.out.println(list.remove(new ClassA(list.size() / 2)));
         System.out.println(list.remove(new ClassA(list.size())));
+        list.printList();
+    }
+
+    static void testCycleLinkedList() {
+        CycleLinkedList<Integer> list = new CycleLinkedList<>();
+        for (int i = 0; i < 10; i++) {
+            list.add(i);
+        }
+        System.out.println(list.remove(Integer.valueOf(0)));
+        System.out.println(list.remove(Integer.valueOf(1)));
+        System.out.println(list.remove(Integer.valueOf(list.size() - 1)));
+        System.out.println(list.remove(Integer.valueOf(list.size() - 2)));
+        System.out.println(list.remove(Integer.valueOf(list.size() / 2)));
+        System.out.println(list.remove(Integer.valueOf(list.size())));
         list.printList();
     }
 
