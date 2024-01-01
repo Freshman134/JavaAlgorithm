@@ -33,7 +33,7 @@ public class MyLinkedList<T> implements MyList<T> {
 
     public T get(int i) {
         if (i > size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         Node<T> node = head;
         for (int j = 0; j <= i; j++) {
@@ -60,7 +60,7 @@ public class MyLinkedList<T> implements MyList<T> {
 
     public void insert(int i, T t) {
         if (i > size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         Node<T> node = head;
         for (int j = 0; j < i; j++) {
@@ -76,7 +76,7 @@ public class MyLinkedList<T> implements MyList<T> {
 
     public void set(int i, T t) {
         if (i >= size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         Node<T> node = head;
         for (int j = 0; j <= i; j++) {

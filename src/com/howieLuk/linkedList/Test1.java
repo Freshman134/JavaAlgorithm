@@ -16,7 +16,7 @@ public class Test1<T> extends MyLinkedList<T> {
     public T getReverse(int i) {
         // 思路一
         if (i > size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         if (i == 0) {
             i = size; // 避免零值问题，倒数第0节点等价于倒数第k个节点

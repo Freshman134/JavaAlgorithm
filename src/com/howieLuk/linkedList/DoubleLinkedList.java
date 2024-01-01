@@ -41,7 +41,7 @@ public class DoubleLinkedList<T> implements MyList<T> {
     @Override
     public T get(int i) {
         if (i >= size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         Node<T> node;
         if (i <= size / 2) {
@@ -73,7 +73,7 @@ public class DoubleLinkedList<T> implements MyList<T> {
     @Override
     public void insert(int i, T t) {
         if (i > size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         if (i <= size / 2) {
             // 从head出发
@@ -102,7 +102,7 @@ public class DoubleLinkedList<T> implements MyList<T> {
     @Override
     public void set(int i, T t) {
         if (i >= size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         Node<T> node;
         if (i <= size / 2) {

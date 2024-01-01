@@ -4,13 +4,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @Deacription TODO
+ * @Deacription 双栈计算器
  * @Author HowieLuk
  * @Date 2024/1/1 11:41
  * @Version 1.0
  **/
 
-public class StackComputer {
+public class StackCalculator {
 
     private static class ExecScanner {
         String execStr;
@@ -77,8 +77,6 @@ public class StackComputer {
     private ArrayStack<Character> operationStack = new ArrayStack<>();
 
     public Number exec(String str) {
-        boolean notHaveSpot = true;
-        StringBuffer tmp = new StringBuffer();
         ExecScanner exec = new ExecScanner(str);
         boolean getNum = true;
         while (exec.hasNext()) {
@@ -91,9 +89,8 @@ public class StackComputer {
                 if (checkPriority(priOp, c) >= 0) {
                     // calculate
                     operate();
-                } else {
-                    operationStack.push(c);
                 }
+                operationStack.push(c);
                 getNum = true;
             }
         }
@@ -117,18 +114,25 @@ public class StackComputer {
         numberArrayStack.push(node);
     }
 
-    private NumberNode getNumberNodeBy(int a, int b, char op) {
+    private NumberNode getNumberNodeBy(Integer a, Integer b, char op) {
         int res = 0;
         switch (op) {
             case '+': res = a + b; break;
             case '-': res = a - b; break;
             case '*': res = a * b; break;
-            case '/': res = a / b; break;
+            case '/': {
+                if (a % b == 0) {
+                    res = a / b;
+                    break;
+                }
+                double doubleRes = a.doubleValue() / b.doubleValue();
+                return new NumberNode(doubleRes, true);
+            }
         }
         return new NumberNode(res, false);
     }
 
-    private NumberNode getNumberNodeBy(double a, double b, char op) {
+    private NumberNode getNumberNodeBy(Double a, Double b, char op) {
         double res = 0;
         switch (op) {
             case '+': res = a + b; break;
@@ -149,7 +153,7 @@ public class StackComputer {
     }
 
     public static void main(String[] args) {
-        StackComputer computer = new StackComputer();
-        System.out.println(computer.exec("1+10/5*2"));
+        StackCalculator computer = new StackCalculator();
+        System.out.println(computer.exec("1+4/2*5"));
     }
 }

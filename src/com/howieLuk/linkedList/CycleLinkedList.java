@@ -42,7 +42,7 @@ public class CycleLinkedList<T> implements MyList<T> {
     @Override
     public void insert(int i, T t) {
         if (i > size) {
-            throw new IndexOutOfBoundsException(i);
+            throw new IndexOutOfBoundsException(String.valueOf(i));
         }
         Node<T> node = head;
         for (int j = 0; j < i; j++) {
