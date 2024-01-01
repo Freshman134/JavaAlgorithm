@@ -90,7 +90,7 @@ public class MyLinkedList<T> implements MyList<T> {
     }
 
     public T remove(int i) {
-        if (i >= size) {
+        if (i >= size || i < 0) {
             return null;
         }
         Node<T> prior = head;
