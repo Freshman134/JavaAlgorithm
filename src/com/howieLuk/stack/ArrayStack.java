@@ -41,9 +41,16 @@ public class ArrayStack<T> {
         }
     }
 
-    public T peak() {
+    public T peek() {
+        return peek(top);
+    }
+
+    public T peek(int i) {
+        if (isEmpty()) {
+            return null;
+        }
         try {
-            return (T)arr[top];
+            return (T)arr[i];
         } catch (ArrayIndexOutOfBoundsException e) {
             return null;
         }
@@ -60,6 +67,10 @@ public class ArrayStack<T> {
         System.out.println("size:" + size);
     }
 
+    public int size() {
+        return size;
+    }
+
     public static void main(String[] args) {
         ArrayStack<Integer> stack = new ArrayStack<>();
         int i = 0;
@@ -68,10 +79,10 @@ public class ArrayStack<T> {
             i++;
         }
         System.out.println(stack.pop());
-        System.out.println(stack.peak());
+        System.out.println(stack.peek());
         while (!stack.isEmpty()) {
             System.out.println(stack.pop());
         }
-        stack.peak();
+        stack.peek();
     }
 }

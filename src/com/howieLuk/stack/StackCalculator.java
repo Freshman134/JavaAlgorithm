@@ -1,5 +1,9 @@
 package com.howieLuk.stack;
 
+import com.howieLuk.linkedList.MyLinkedList;
+import com.howieLuk.queue.ArrayQueue;
+import com.howieLuk.queue.Queue;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -25,32 +29,48 @@ public class StackCalculator {
         }
 
         public NumberNode nextNumberNode() {
-            Character nextC = execStr.charAt(i);
-            StringBuilder sb = new StringBuilder();
+            if (!hasNext()) {
+                throw new RuntimeException("错误表达式: " + execStr + "\tlocation:" + (i - 1));
+            }
             boolean notHaveSpot = true;
-            do {
-                Character c = nextC;
+            StringBuilder sb = new StringBuilder();
+            // 判断是否是可能一个负数
+            if (execStr.charAt(i) == '-' && isNumber(execStr.charAt(i + 1))) {
+                sb.append(execStr.charAt(i++));
+            }
+            while (hasNext() && (isNumber(execStr.charAt(i)) ||
+                    (execStr.charAt(i) == '.' && notHaveSpot))) {
+                Character c = execStr.charAt(i);
                 if (c == '.') {
                     notHaveSpot = false;
                 }
                 sb.append(c);
-                try {
-                    nextC = execStr.charAt(++i);
-                } catch (StringIndexOutOfBoundsException ig) {
-                    break;
-                }
-            } while ((nextC >= '0' && nextC <= '9') || (notHaveSpot && nextC.equals('.')));
-            return notHaveSpot ? new NumberNode(Integer.parseInt(sb.toString()), false)
-                    : new NumberNode(Double.parseDouble(sb.toString()), true);
+                i++;
+            }
+            try {
+                return notHaveSpot ? new NumberNode(Integer.parseInt(sb.toString()), false)
+                        : new NumberNode(Double.parseDouble(sb.toString()), true);
+            } catch (NumberFormatException e) {
+                throw new RuntimeException("错误表达式: " + execStr + "\tlocation:" + i);
+            }
         }
 
         public Character nextOp() {
-            Character c = execStr.charAt(i++);
+            if (!hasNext()) {
+                throw new RuntimeException("错误表达式: " + execStr + "\tlocation:" + (i - 1));
+            }
+            Character c = execStr.charAt(i);
             if (hasOp(c)) {
+                i++;
                 return c;
             }
-            throw new RuntimeException("表达式有误！没有操作符(" + c + "):" + execStr.substring(0, i - 1));
+            throw new RuntimeException("错误表达式: " + execStr + "\tlocation:" + i);
         }
+
+        private boolean isNumber(char c) {
+            return c >= '0' && c <= '9';
+        }
+
     }
 
     private static class NumberNode {
@@ -60,6 +80,11 @@ public class StackCalculator {
         public NumberNode(Number num, boolean isDouble) {
             this.num = num;
             this.isDouble = isDouble;
+        }
+
+        @Override
+        public String toString() {
+            return num.toString();
         }
     }
 
@@ -85,7 +110,7 @@ public class StackCalculator {
                 getNum = false;
             } else {
                 Character c = exec.nextOp();
-                Character priOp = operationStack.peak();
+                Character priOp = operationStack.peek();
                 if (checkPriority(priOp, c) >= 0) {
                     // calculate
                     operate();
@@ -94,9 +119,20 @@ public class StackCalculator {
                 getNum = true;
             }
         }
-
-        while (!operationStack.isEmpty()) {
-            operate();
+        // 先把运算符栈中，位于队尾的优先级高的运算符先运算
+        if (!operationStack.isEmpty()) {
+            while (checkPriority(operationStack.peek(), operationStack.peek(operationStack.size() - 2)) > 0) {
+                operate();
+            }
+            // 反转栈，因为需要从左至右计算
+            numberArrayStack = reverse(numberArrayStack);
+            operationStack = reverse(operationStack);
+            while (!operationStack.isEmpty()) {
+                Character op = operationStack.pop();
+                NumberNode a = numberArrayStack.pop();
+                NumberNode b = numberArrayStack.pop();
+                operate(a, b, op, numberArrayStack);
+            }
         }
         return numberArrayStack.pop().num;
     }
@@ -105,16 +141,20 @@ public class StackCalculator {
         NumberNode a = numberArrayStack.pop();
         NumberNode b = numberArrayStack.pop();
         char op = operationStack.pop();
-        NumberNode node;
-        if (!a.isDouble && !b.isDouble) {
-            node = getNumberNodeBy(b.num.intValue(), a.num.intValue(), op);
-        } else {
-            node = getNumberNodeBy(b.num.doubleValue(), a.num.doubleValue(), op);
-        }
-        numberArrayStack.push(node);
+        operate(b, a, op, numberArrayStack);
     }
 
-    private NumberNode getNumberNodeBy(Integer a, Integer b, char op) {
+    private static void operate(NumberNode a, NumberNode b, Character op, ArrayStack<NumberNode> numberNodeStack) {
+        NumberNode node;
+        if (!a.isDouble && !b.isDouble) {
+            node = getNumberNodeBy(a.num.intValue(), b.num.intValue(), op);
+        } else {
+            node = getNumberNodeBy(a.num.doubleValue(), b.num.doubleValue(), op);
+        }
+        numberNodeStack.push(node);
+    }
+
+    private static NumberNode getNumberNodeBy(Integer a, Integer b, char op) {
         int res = 0;
         switch (op) {
             case '+': res = a + b; break;
@@ -132,7 +172,7 @@ public class StackCalculator {
         return new NumberNode(res, false);
     }
 
-    private NumberNode getNumberNodeBy(Double a, Double b, char op) {
+    private static NumberNode getNumberNodeBy(Double a, Double b, char op) {
         double res = 0;
         switch (op) {
             case '+': res = a + b; break;
@@ -152,8 +192,16 @@ public class StackCalculator {
         return i != null && i >= 0;
     }
 
+    private static <T> ArrayStack<T> reverse(ArrayStack<T> stack) {
+        ArrayStack<T> newStack = new ArrayStack<>();
+        for (int i = stack.size() - 1; i >= 0; i--) {
+            newStack.push(stack.peek(i));
+        }
+        return newStack;
+    }
+
     public static void main(String[] args) {
-        StackCalculator computer = new StackCalculator();
-        System.out.println(computer.exec("1+4/2*5"));
+        StackCalculator calculator = new StackCalculator();
+        System.out.println(calculator.exec("-10+10.00--10.*2+5/5"));
     }
 }

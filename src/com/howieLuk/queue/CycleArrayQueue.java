@@ -42,6 +42,22 @@ public class CycleArrayQueue<T> implements Queue<T> {
     }
 
     @Override
+    public T peek(int i) {
+        if (isEmpty()) {
+            return null;
+        }
+        return (T)arr[(i + front + queueSize) % queueSize];
+    }
+
+    @Override
+    public T peek() {
+        if (isEmpty()) {
+            return null;
+        }
+        return (T)arr[front];
+    }
+
+    @Override
     public boolean isEmpty() {
         return rear == front;
     }

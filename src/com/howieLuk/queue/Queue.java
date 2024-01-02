@@ -8,6 +8,10 @@ public interface Queue<T> {
 
     void push(T t);
 
+    T peek(int i);
+
+    T peek();
+
     boolean isEmpty();
 
     int length();

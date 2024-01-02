@@ -12,6 +12,10 @@ public class ArrayQueue<T> implements Queue<T> {
     private int rear;
     private int queueSize;
 
+    public ArrayQueue() {
+        this(16);
+    }
+
     public ArrayQueue(int queueSize) {
         this.queueSize = queueSize;
         arr = new Object[queueSize];
@@ -46,6 +50,26 @@ public class ArrayQueue<T> implements Queue<T> {
             throw new RuntimeException("队列已满");
         }
         arr[++rear] = t;
+    }
+
+    @Override
+    public T peek(int i) {
+        if (isEmpty()) {
+            return null;
+        }
+        try {
+            return (T)arr[i];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return null;
+        }
+    }
+
+    @Override
+    public T peek() {
+        if (isEmpty()) {
+            return null;
+        }
+        return (T)arr[0];
     }
 
     @Override
