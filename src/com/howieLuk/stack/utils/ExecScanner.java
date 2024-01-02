@@ -81,12 +81,17 @@ public class ExecScanner {
         throw new RuntimeException("错误表达式: " + execStr + "\tlocation:" + i);
     }
 
+    public boolean nextIsLeftBracket() {
+        return execStr.charAt(i) == '(';
+    }
+
     private boolean isNumber(char c) {
         return c >= '0' && c <= '9';
     }
 
     private static boolean hasOp(Character character) {
-        return character == '+' || character == '-' || character == '*' || character == '/';
+        return character == '+' || character == '-' || character == '*' || character == '/'
+                || character == '(' || character == ')';
     }
 
 }
