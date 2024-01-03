@@ -26,25 +26,6 @@ public class RPNCalculator {
 
     public Number exec(String str) {
         // 中缀表达式转后缀表达式
-        /*
-        1+((2+3)*4)-5
-        1 2 3 + 4 * + 5 -
-
-
-        2 3 +
-           +
-        1     -
-            *   5
-           +  4
-          2 3
-       1 2 3 + 4 * 5 - +
-
-       1*2-4
-         *
-       1   -
-         2   4
-
-         */
         ExecScanner scanner = new ExecScanner(str);
         ArrayStack<Object> s1 = new ArrayStack<>();
         ArrayStack<Character> s2 = new ArrayStack<>();
@@ -74,10 +55,12 @@ public class RPNCalculator {
                     }
                     continue;
                 }
-                if (checkPriority(c, s2.peek()) > 0 || c == '(') {
+                if (c == '(') {
                     s2.push(c);
                 } else {
-                    s1.push(s2.pop());
+                    while (!s2.isEmpty() && checkPriority(c, s2.peek()) <= 0) {
+                        s1.push(s2.pop());
+                    }
                     s2.push(c);
                 }
                 getNum = true;
