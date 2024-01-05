@@ -1,34 +1,28 @@
 package com.howieLuk.sort;
 
 import com.howieLuk.linkedList.DoubleLinkedList;
-import com.howieLuk.linkedList.MyLinkedList;
 import com.howieLuk.linkedList.MyList;
-import com.howieLuk.utils.Shuffle;
 import com.howieLuk.utils.StopWatch;
 
 import java.util.Random;
 
 /**
- * @author HowieLuk
- * @date 2024/1/5 0:47
- */
-public class BubbleSort {
+ * @Deacription TODO
+ * @Author HowieLuk
+ * @Date 2024/1/5 21:44
+ * @Version 1.0
+ **/
+public class InsertSort {
 
-    static <T extends Comparable<T>> void sort(MyList<T> list) {
-        boolean noSwap = true;
-        for (int i = list.size(); i > 0; i--) {
-            for (int j = 0; j < i - 1; j++) {
-                T e = list.get(j);
-                if (e.compareTo(list.get(j + 1)) > 0) {
-                    noSwap = false;
-                    T tmp = list.get(j + 1);
-                    list.set(j + 1, e);
-                    list.set(j, tmp);
-                }
+    public static <T extends Comparable<T>> void sort(MyList<T> list) {
+        for (int i = 1; i < list.size(); i++) {
+            T tmp = list.get(i);
+            T e;
+            int j = i;
+            for (; j > 0 && tmp.compareTo(e = list.get(j - 1)) < 0; j--) {
+                list.set(j, e);
             }
-            if (noSwap) {
-                break;
-            }
+            list.set(j, tmp);
         }
     }
 
@@ -44,7 +38,6 @@ public class BubbleSort {
         watch.start();
         sort(list);
         watch.stop();
-//        list.printList();
         for (int i = 0; i < list.size() - 1; i++) {
             Integer i1 = list.get(i);
             Integer i2 = list.get(i + 1);
@@ -52,6 +45,7 @@ public class BubbleSort {
                 throw new RuntimeException("排序错误:" + i);
             }
         }
+//        list.printList();
     }
 
 }

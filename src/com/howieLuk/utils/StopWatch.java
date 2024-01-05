@@ -32,7 +32,9 @@ public class StopWatch {
     public long stop() {
         cost = System.currentTimeMillis() - start + cost;
         System.out.println("计时结束，耗时：" + cost + "毫秒");
-        return cost;
+        long ret = cost;
+        cost = 0;
+        return ret;
     }
 
     public void clear() {
