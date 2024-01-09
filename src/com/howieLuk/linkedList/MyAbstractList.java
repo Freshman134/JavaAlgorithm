@@ -40,11 +40,6 @@ public abstract class MyAbstractList<T> implements MyList<T> {
     }
 
     @Override
-    public <T1> T1[] toArray(IntFunction<T1[]> generator) {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
     public boolean add(T t) {
         throw new UnsupportedOperationException();
     }

@@ -4,6 +4,7 @@ import com.howieLuk.linkedList.DoubleLinkedList;
 import com.howieLuk.linkedList.MyList;
 import com.howieLuk.search.BinarySearch;
 import com.howieLuk.search.FibSearch;
+import com.howieLuk.search.InterpolationSearch;
 import com.howieLuk.sort.RadixSort;
 
 import java.util.*;
@@ -25,7 +26,7 @@ public class SearchTest {
         }
         int t1 = list.get(0);
         int tMax = list.get(list.size() - 1);
-        FibSearch search = new FibSearch();
+        InterpolationSearch search = new InterpolationSearch();
         if (search.search(list, t1).get(0) != t1 ||
                 search.search(list, tMax).get(0) != list.size() - 1) {
             throw new RuntimeException("边界值错误");
