@@ -1,20 +1,22 @@
 package com.howieLuk.linkedList;
 
-public interface MyList<T> {
+import java.util.List;
 
-    void add(T t);
+public interface MyList<T> extends List<T> {
+
+//    void add(T t);
 
     T get(int i);
 
-    int indexOf(T t);
+//    int indexOf(T t);
 
     void insert(int i, T t);
 
-    void set(int i, T t);
+//    void set(int i, T t);
 
     T remove(int i);
 
-    T remove(T t);
+//    T remove(T t);
 
     void printList();
 

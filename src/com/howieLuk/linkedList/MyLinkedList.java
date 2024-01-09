@@ -8,7 +8,7 @@ import java.util.LinkedList;
  * @Date 2023/12/30 19:29
  * @Version 1.0
  **/
-public class MyLinkedList<T> implements MyList<T> {
+public class MyLinkedList<T> extends MyAbstractList<T> implements MyList<T> {
 
     Node<T> head = new Node<>(null, null);
     int size;
@@ -27,8 +27,9 @@ public class MyLinkedList<T> implements MyList<T> {
         }
     }
 
-    public void add(T t) {
+    public boolean add(T t) {
         insert(size, t);
+        return true;
     }
 
     public T get(int i) {
@@ -47,7 +48,8 @@ public class MyLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public int indexOf(T t) {
+    public int indexOf(Object obj) {
+        T t = (T)obj;
         int i = 0;
         for (Node<T> node = head.next; node != null; node = node.next) {
             if (node.t.equals(t)) {
@@ -74,7 +76,7 @@ public class MyLinkedList<T> implements MyList<T> {
         size++;
     }
 
-    public void set(int i, T t) {
+    public T set(int i, T t) {
         if (i >= size) {
             throw new IndexOutOfBoundsException(String.valueOf(i));
         }
@@ -86,7 +88,9 @@ public class MyLinkedList<T> implements MyList<T> {
                 throw new RuntimeException("location:" + j);
             }
         }
+        T ret = node.t;
         node.t = t;
+        return ret;
     }
 
     public T remove(int i) {
@@ -108,17 +112,18 @@ public class MyLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public T remove(T t) {
+    public boolean remove(Object obj) {
+        T t = (T)obj;
         Node<T> priorNode = head;
         for (Node<T> node = head.next; node != null; node = node.next) {
             if (node.t.equals(t)) {
                 priorNode.next = node.next;
                 size--;
-                return node.t;
+                return true;
             }
             priorNode = node;
         }
-        return null;
+        return false;
     }
 
     public void printList() {
@@ -180,5 +185,6 @@ public class MyLinkedList<T> implements MyList<T> {
     public boolean isEmpty() {
         return size == 0;
     }
+
 
 }

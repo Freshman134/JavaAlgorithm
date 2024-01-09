@@ -6,7 +6,7 @@ package com.howieLuk.linkedList;
  * @Date 2023/12/31 18:53
  * @Version 1.0
  **/
-public class CycleLinkedList<T> implements MyList<T> {
+public class CycleLinkedList<T> extends MyAbstractList<T> implements MyList<T> {
 
     int size;
     Node<T> head = new Node<>(null, null);
@@ -25,18 +25,14 @@ public class CycleLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public void add(T t) {
+    public boolean add(T t) {
         insert(size, t);
+        return true;
     }
 
     @Override
     public T get(int i) {
         return null;
-    }
-
-    @Override
-    public int indexOf(T t) {
-        return 0;
     }
 
     @Override
@@ -52,10 +48,6 @@ public class CycleLinkedList<T> implements MyList<T> {
         size++;
     }
 
-    @Override
-    public void set(int i, T t) {
-
-    }
 
     @Override
     public T remove(int i) {
@@ -65,18 +57,19 @@ public class CycleLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public T remove(T t) {
+    public boolean remove(Object obj) {
+        T t = (T) obj;
         System.out.println("remove(T t)");
         Node<T> priorNode = head;
         for (Node<T> delNode = head.next; delNode != head; delNode = delNode.next) {
             if (delNode.t.equals(t)) {
                 priorNode.next = delNode.next;
                 size--;
-                return delNode.t;
+                return true;
             }
             priorNode = delNode;
         }
-        return null;
+        return false;
     }
 
     @Override

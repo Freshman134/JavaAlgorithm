@@ -4,6 +4,7 @@ import com.howieLuk.linkedList.DoubleLinkedList;
 import com.howieLuk.linkedList.MyList;
 import com.howieLuk.utils.StopWatch;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -22,6 +23,45 @@ public class QuickSort {
     }
 
     private static <T extends Comparable<T>> void sort(int startInd, int endInd, MyList<T> list) {
+        if (startInd >= endInd) {
+            return;
+        }
+        int left, mid, right;
+        left = mid = startInd;
+        right = endInd;
+        T midE = list.get(mid);
+        while (left < right) {
+            if (mid == left && midE.compareTo(list.get(right)) <= 0) {
+                right--;
+            } else {
+                T rightE = list.get(right);
+                list.set(left, rightE);
+                list.set(right, midE);
+                mid = right;
+                left++;
+            }
+            if (mid == right && midE.compareTo(list.get(left)) >= 0) {
+                left++;
+            } else {
+                T leftE = list.get(left);
+                list.set(right, leftE);
+                list.set(left, midE);
+                mid = left;
+                right--;
+            }
+        }
+        sort(startInd, mid - 1, list);
+        sort(mid + 1, endInd, list);
+    }
+
+    public static <T extends Comparable<T>> void sort(List<T> list) {
+        if (list == null && !list.isEmpty()) {
+            return;
+        }
+        sort(0, list.size() - 1, list);
+    }
+
+    private static <T extends Comparable<T>> void sort(int startInd, int endInd, List<T> list) {
         if (startInd >= endInd) {
             return;
         }

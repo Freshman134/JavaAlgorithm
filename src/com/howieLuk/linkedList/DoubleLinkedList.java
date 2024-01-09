@@ -6,7 +6,7 @@ package com.howieLuk.linkedList;
  * @Date 2023/12/31 14:24
  * @Version 1.0
  **/
-public class DoubleLinkedList<T> implements MyList<T> {
+public class DoubleLinkedList<T> extends MyAbstractList<T> implements MyList<T> {
 
     private int size;
     private Node<T> head = new Node<>(null, null, null);
@@ -34,8 +34,14 @@ public class DoubleLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public void add(T t) {
+    public boolean add(T t) {
         insert(size, t);
+        return true;
+    }
+
+    @Override
+    public void add(int index, T element) {
+        insert(index, element);
     }
 
     @Override
@@ -59,7 +65,8 @@ public class DoubleLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public int indexOf(T t) {
+    public int indexOf(Object obj) {
+        T t = (T) obj;
         int i = 0;
         for (Node<T> node = head.rear; node != tail; node = node.rear) {
             if (node.t.equals(t)) {
@@ -100,7 +107,7 @@ public class DoubleLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public void set(int i, T t) {
+    public T set(int i, T t) {
         if (i >= size) {
             throw new IndexOutOfBoundsException(String.valueOf(i));
         }
@@ -118,7 +125,9 @@ public class DoubleLinkedList<T> implements MyList<T> {
                 node = node.prior;
             }
         }
+        T ret = node.t;
         node.t = t;
+        return ret;
     }
 
     @Override
@@ -149,7 +158,8 @@ public class DoubleLinkedList<T> implements MyList<T> {
     }
 
     @Override
-    public T remove(T t) {
+    public boolean remove(Object obj) {
+        T t = (T) obj;
         for (Node<T> node = head.rear; node != tail; node = node.rear) {
             if (node.t.equals(t)) {
                 Node<T> priorNode = node.prior;
@@ -157,10 +167,10 @@ public class DoubleLinkedList<T> implements MyList<T> {
                 priorNode.rear = rearNode;
                 rearNode.prior = priorNode;
                 size--;
-                return node.t;
+                return true;
             }
         }
-        return null;
+        return false;
     }
 
     @Override
