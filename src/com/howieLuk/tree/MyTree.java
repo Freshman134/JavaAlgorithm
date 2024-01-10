@@ -8,6 +8,8 @@ package com.howieLuk.tree;
  **/
 public class MyTree<T extends Comparable<T>> {
 
+    TreeNode root;
+
     private class TreeNode {
         T e;
         TreeNode left, right;
@@ -41,6 +43,17 @@ public class MyTree<T extends Comparable<T>> {
                 post();
             }
             System.out.print(e + "\t");
+        }
+
+        T get(T t) {
+            if (e.equals(t)) {
+                return e;
+            } else if (left != null && e.compareTo(t) > 0) {
+                return left.get(t);
+            } else if (right != null) {
+                return right.get(t);
+            }
+            return null;
         }
 
         TreeNode getMinNode() {
@@ -83,12 +96,37 @@ public class MyTree<T extends Comparable<T>> {
                 delNode.right = delNode(delNode.right, val);
             }
         } else if (val.compareTo(delNode.e) < 0) {
-            delNode.left = delNode(delNode.left, val);
+            if (delNode.left != null) {
+                delNode.left = delNode(delNode.left, val);
+            }
         } else {
-            delNode.right = delNode(delNode.right, val);
+            if (delNode.right != null) {
+                delNode.right = delNode(delNode.right, val);
+            }
         }
         return delNode;
     }
+
+    public T remove(T val) {
+        if (root == null) {
+            return null;
+        }
+        T t = root.get(val);
+        if (t == null) {
+            return null;
+        }
+        root = delNode(root, val);
+        return t;
+    }
+
+    public T get(T val) {
+        if (root == null) {
+            return null;
+        }
+        return root.get(val);
+    }
+
+
 
     private void swapVal(TreeNode node1, TreeNode node2) {
         T tmp = node1.e;
