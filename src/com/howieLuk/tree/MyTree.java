@@ -8,7 +8,8 @@ package com.howieLuk.tree;
  **/
 public class MyTree<T extends Comparable<T>> {
 
-    TreeNode root;
+    private TreeNode root;
+    private int size;
 
     private class TreeNode {
         T e;
@@ -56,6 +57,28 @@ public class MyTree<T extends Comparable<T>> {
             return null;
         }
 
+        T put(T t) {
+            if (e.equals(t)) {
+                return e;
+            } else if (e.compareTo(t) > 0) {
+                if (left == null) {
+                    left = new TreeNode();
+                    left.e = t;
+                    return null;
+                } else {
+                    return left.put(t);
+                }
+            } else {
+                if (right == null) {
+                    right = new TreeNode();
+                    right.e = t;
+                    return null;
+                } else {
+                    return right.put(t);
+                }
+            }
+        }
+
         TreeNode getMinNode() {
             if (left != null) {
                 return left.getMinNode();
@@ -78,6 +101,45 @@ public class MyTree<T extends Comparable<T>> {
             return deleted;
         }
 
+    }
+
+    public T remove(T val) {
+        if (root == null) {
+            return null;
+        }
+        T t = root.get(val);
+        if (t == null) {
+            return null;
+        }
+        root = delNode(root, val);
+        size--;
+        return t;
+    }
+
+    public T get(T val) {
+        if (root == null) {
+            return null;
+        }
+        return root.get(val);
+    }
+
+    public boolean isEmpty() {
+        return size == 0;
+    }
+
+    public T put(T e) {
+        T t = root.put(e);
+        if (t == null) {
+            size++;
+            return null;
+        }
+        return t;
+    }
+
+    private void swapVal(TreeNode node1, TreeNode node2) {
+        T tmp = node1.e;
+        node1.e = node2.e;
+        node2.e = tmp;
     }
 
     private TreeNode delNode(TreeNode delNode, T val) {
@@ -105,33 +167,6 @@ public class MyTree<T extends Comparable<T>> {
             }
         }
         return delNode;
-    }
-
-    public T remove(T val) {
-        if (root == null) {
-            return null;
-        }
-        T t = root.get(val);
-        if (t == null) {
-            return null;
-        }
-        root = delNode(root, val);
-        return t;
-    }
-
-    public T get(T val) {
-        if (root == null) {
-            return null;
-        }
-        return root.get(val);
-    }
-
-
-
-    private void swapVal(TreeNode node1, TreeNode node2) {
-        T tmp = node1.e;
-        node1.e = node2.e;
-        node2.e = tmp;
     }
 
 }
