@@ -128,6 +128,11 @@ public class MyTree<T extends Comparable<T>> {
     }
 
     public T put(T e) {
+        if (root == null) {
+            root = new TreeNode();
+            root.e = e;
+            return null;
+        }
         T t = root.put(e);
         if (t == null) {
             size++;
