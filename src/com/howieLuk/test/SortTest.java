@@ -31,6 +31,7 @@ public class SortTest {
     }
 
     public static void main(String[] args) {
+//        int [] arr = new int[]{25, 81, 50, 90, 76, 28, 16, 4, 49, 78};
         List<Integer> list = new DoubleLinkedList<>();
         Random random = new Random();
         for (int i = 0; i < 2000; i++) {
