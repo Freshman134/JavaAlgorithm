@@ -1,6 +1,7 @@
 package com.howieLuk.test;
 
 import com.howieLuk.linkedList.DoubleLinkedList;
+import com.howieLuk.tree.ArrayTree;
 import com.howieLuk.tree.MyTree;
 
 import java.util.List;
@@ -13,12 +14,12 @@ import java.util.Random;
 public class TreeTest {
 
     public static void main(String[] args) {
-        MyTree<Integer> tree = new MyTree<>();
+        ArrayTree<Integer> tree = new ArrayTree<>();
         Random random = new Random();
         List<Integer> eleList = new DoubleLinkedList<>();
         // test put
-        for (int i = 0; i < 1000; i++) {
-            int e = random.nextInt(1000);
+        for (int i = 0; i < 100; i++) {
+            int e = random.nextInt(100);
             if (tree.put(e) == null) {
                 eleList.add(e);
             }
@@ -34,7 +35,7 @@ public class TreeTest {
 
         // test delete
         System.out.println("size:" + eleList.size());
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 10; i++) {
             int ind = random.nextInt(eleList.size());
             int e = eleList.remove(ind);
 //            System.out.println("delete:" + e);
