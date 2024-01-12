@@ -8,40 +8,40 @@ package com.howieLuk.tree;
  **/
 public class MyTree<T extends Comparable<T>> {
 
-    private TreeNode root;
-    private int size;
+    TreeNode<T> root;
+    int size;
 
-    private class TreeNode {
+    static class TreeNode<T extends Comparable<T>> {
         T e;
-        TreeNode left, right;
+        TreeNode<T> left, right;
         boolean deleted = false;
 
         void pre() {
             if (left != null) {
-                pre();
+                left.pre();
             }
             System.out.print(e + "\t");
             if (right != null) {
-                pre();
+                right.pre();
             }
         }
 
         void infix() {
             System.out.print(e + "\t");
             if (left != null) {
-                infix();
+                left.infix();
             }
             if (right != null) {
-                infix();
+                right.infix();
             }
         }
 
         void post() {
             if (left != null) {
-                post();
+                left.post();
             }
             if (right != null) {
-                post();
+                right.post();
             }
             System.out.print(e + "\t");
         }
@@ -79,14 +79,14 @@ public class MyTree<T extends Comparable<T>> {
             }
         }
 
-        TreeNode getMinNode() {
+        TreeNode<T> getMinNode() {
             if (left != null) {
                 return left.getMinNode();
             }
             return this;
         }
 
-        TreeNode getMaxNode() {
+        TreeNode<T> getMaxNode() {
             if (right != null) {
                 return right.getMaxNode();
             }
@@ -141,24 +141,24 @@ public class MyTree<T extends Comparable<T>> {
         return t;
     }
 
-    private void swapVal(TreeNode node1, TreeNode node2) {
+    private void swapVal(TreeNode<T> node1, TreeNode<T> node2) {
         T tmp = node1.e;
         node1.e = node2.e;
         node2.e = tmp;
     }
 
-    private TreeNode delNode(TreeNode delNode, T val) {
+    private TreeNode<T> delNode(TreeNode<T> delNode, T val) {
         if (val.compareTo(delNode.e) == 0) {
             if (delNode.isLeaf()) {
                 return null;
             }
             if (delNode.left != null) {
-                TreeNode maxNode = delNode.left.getMaxNode();
+                TreeNode<T> maxNode = delNode.left.getMaxNode();
                 // swap
                 swapVal(delNode, maxNode);
                 delNode.left = delNode(delNode.left, val);
             } else {
-                TreeNode minNode = delNode.right.getMinNode();
+                TreeNode<T> minNode = delNode.right.getMinNode();
                 swapVal(delNode, minNode);
                 delNode.right = delNode(delNode.right, val);
             }

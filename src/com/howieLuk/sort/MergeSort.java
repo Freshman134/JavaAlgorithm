@@ -16,14 +16,14 @@ import java.util.Random;
  **/
 public class MergeSort {
 
-    public static  <T extends Comparable<T>> void sort(MyList<T> list) {
+    public static  <T extends Comparable<T>> void sort(List<T> list) {
         if (list == null || list.isEmpty()) {
             return;
         }
         sort(0, list.size() - 1, list);
     }
 
-    public static  <T extends Comparable<T>> void sort(int startInd, int endInd, MyList<T> list) {
+    public static  <T extends Comparable<T>> void sort(int startInd, int endInd, List<T> list) {
         if (startInd >= endInd) {
             return;
         }
