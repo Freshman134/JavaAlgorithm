@@ -57,10 +57,10 @@ public class HuffmanCoding {
             retMap.put(node.e, code);
         }
         if (node.left != null) {
-            preHuffmanTreeAndPutCodeInto(retMap, code + "0", node.left); // 往左0
+            preHuffmanTreeAndPutCodeInto(retMap, "0" + code, node.left); // 往左0
         }
         if (node.right != null) {
-            preHuffmanTreeAndPutCodeInto(retMap, code + "1", node.right);// 往右1
+            preHuffmanTreeAndPutCodeInto(retMap, "1" + code, node.right);// 往右1
         }
     }
 
