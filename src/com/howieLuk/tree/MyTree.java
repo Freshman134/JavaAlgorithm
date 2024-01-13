@@ -27,10 +27,10 @@ public class MyTree<T extends Comparable<T>> {
         }
 
         void infix() {
-            System.out.print(e + "\t");
             if (left != null) {
                 left.infix();
             }
+            System.out.print(e + "\t");
             if (right != null) {
                 right.infix();
             }
