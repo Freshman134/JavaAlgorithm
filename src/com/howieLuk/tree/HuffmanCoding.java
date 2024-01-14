@@ -87,10 +87,10 @@ public class HuffmanCoding {
             retMap.put(node.e, code);
         }
         if (node.left != null) {
-            preHuffmanTreeAndPutCodeInto(retMap, "0" + code, node.left); // 往左0
+            preHuffmanTreeAndPutCodeInto(retMap, code + "0", node.left); // 往左0
         }
         if (node.right != null) {
-            preHuffmanTreeAndPutCodeInto(retMap, "1" + code, node.right);// 往右1
+            preHuffmanTreeAndPutCodeInto(retMap, code + "1", node.right);// 往右1
         }
     }
 
@@ -144,9 +144,29 @@ public class HuffmanCoding {
                 encodeStr.append(Integer.toBinaryString((encodeArr[i] >> (8 - len)) | (1 << len)).substring(1));
             }
         }
-        int encodeInd = 0;
         System.out.println(HuffmanCode.testBinaryStr.equals(encodeStr.toString()));
-        return null;
+        StringBuilder oneCode = new StringBuilder();
+        StringBuilder decodeMsg = new StringBuilder();
+        int encodeInd = 0;
+        while (encodeInd < encodeStr.length()) {
+            while (!code.codeMap.containsValue(oneCode.toString())) {
+                char c = encodeStr.charAt(encodeInd++);
+                oneCode.append(c);
+                if (encodeInd >= encodeStr.length()) {
+                    break;
+                }
+            }
+            for (Map.Entry<Byte, String> entry : code.getCodeMap().entrySet()) {
+                if (entry.getValue().equals(oneCode.toString())) {
+                    int tmp = entry.getKey();
+                    char c = (char)tmp;
+                    decodeMsg.append(c);
+                    break;
+                }
+            }
+            oneCode = new StringBuilder();
+        }
+        return decodeMsg.toString();
     }
 
     public static void main(String[] args) {
