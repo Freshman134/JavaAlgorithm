@@ -125,54 +125,48 @@ public class HuffmanCoding {
         byte [] encodeArr = code.getMsg();
         StringBuilder encodeStr = new StringBuilder();
         for (int i = 0; i < encodeArr.length; i++) {
-            System.out.println(encodeStr.length());
             if (code.getMsgLen() - encodeStr.length() >= 8) {
                 if (encodeArr[i] >= 0) {
-                    System.out.println(Integer
-                            .toBinaryString(encodeArr[i] | 0x100).substring(1)
-                            .equals(HuffmanCode.testBinaryStr.substring(i * 8, i * 8 + 8)));
                     encodeStr.append(Integer.toBinaryString(encodeArr[i] | 0x100).substring(1));
                 } else {
-                    System.out.println(Integer.toBinaryString(encodeArr[i] & 0xff)
-                            .equals(HuffmanCode.testBinaryStr.substring(i * 8, i * 8 + 8)));
                     encodeStr.append(Integer.toBinaryString(encodeArr[i] & 0xff));
                 }
             } else {
-                System.out.println(encodeStr.length());
                 int len = code.getMsgLen() - encodeStr.length();
-                System.out.println(Integer.toBinaryString((encodeArr[i] >> (8 - len)) | (1 << len)).substring(1));
-                encodeStr.append(Integer.toBinaryString((encodeArr[i] >> (8 - len)) | (1 << len)).substring(1));
+                int lastByte = (encodeArr[i] >> (8 - len));
+                lastByte = lastByte > 0 ? lastByte | (1 << len) : lastByte & 0xff;
+                encodeStr.append(Integer.toBinaryString(lastByte).substring(1));
             }
         }
         System.out.println(HuffmanCode.testBinaryStr.equals(encodeStr.toString()));
         StringBuilder oneCode = new StringBuilder();
         StringBuilder decodeMsg = new StringBuilder();
         int encodeInd = 0;
+        Map<String, Byte> encodeStrByteMap = new HashMap<>();
+        for (Map.Entry<Byte, String> entry : code.getCodeMap().entrySet()) {
+            encodeStrByteMap.put(entry.getValue(), entry.getKey());
+        }
         while (encodeInd < encodeStr.length()) {
-            while (!code.codeMap.containsValue(oneCode.toString())) {
+            while (!encodeStrByteMap.containsKey(oneCode.toString())) {
                 char c = encodeStr.charAt(encodeInd++);
                 oneCode.append(c);
                 if (encodeInd >= encodeStr.length()) {
                     break;
                 }
             }
-            for (Map.Entry<Byte, String> entry : code.getCodeMap().entrySet()) {
-                if (entry.getValue().equals(oneCode.toString())) {
-                    int tmp = entry.getKey();
-                    char c = (char)tmp;
-                    decodeMsg.append(c);
-                    break;
-                }
-            }
+            int tmp = encodeStrByteMap.get(oneCode.toString());
+            char c = (char)tmp;
+            decodeMsg.append(c);
+
             oneCode = new StringBuilder();
         }
         return decodeMsg.toString();
     }
 
     public static void main(String[] args) {
-        String test = "i like like like java do you like a java";
+        String test = "aaaaaaaaaaaaaaabbbbbbbbbbbbbbbb";
         HuffmanCode code = HuffmanCoding.getEncode(test);
-        HuffmanCoding.decode(code);
+        System.out.println(HuffmanCoding.decode(code));
         byte b = -88;
         int i = b;
 //        System.out.println(b);
