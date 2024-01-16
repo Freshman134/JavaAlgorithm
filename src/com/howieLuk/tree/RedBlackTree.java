@@ -14,10 +14,11 @@ public class RedBlackTree<T extends Comparable<T>> {
     private static class TreeNode<T extends Comparable<T>> {
         T t;
         TreeNode<T> left, right, parent;
-        boolean red = true;
+        boolean red = false;
 
         TreeNode(T t) {
             this.t = t;
+            setNIL(this);
         }
 
         TreeNode(T t, TreeNode<T> parent) {
@@ -25,8 +26,28 @@ public class RedBlackTree<T extends Comparable<T>> {
             this.parent = parent;
         }
 
+        void addNodeLeft(T t) {
+            left.t = t;
+            left.red = true;
+            setNIL(left);
+        }
+
+        void  addNodeRight(T t) {
+            right.t = t;
+            right.red = true;
+            setNIL(right);
+        }
+
         boolean isLeaf() {
-            return left == null && right == null;
+            return leftIsNIL() && rightIsNIL();
+        }
+
+        boolean leftIsNIL() {
+            return left == null || left.t == null;
+        }
+
+        boolean rightIsNIL() {
+            return right == null || right.t == null;
         }
 
         TreeNode<T> getMaxNode() {
@@ -35,6 +56,11 @@ public class RedBlackTree<T extends Comparable<T>> {
 
         TreeNode<T> getMinNode() {
             return left == null ? this : left.getMinNode();
+        }
+
+        static <T extends Comparable<T>> void setNIL(TreeNode<T> node) {
+            node.left = new TreeNode<>(null, node);
+            node.right = new TreeNode<>(null, node);
         }
 
     }
@@ -47,7 +73,7 @@ public class RedBlackTree<T extends Comparable<T>> {
                 parent.right = null;
             }
         } else {
-            if (deleteNode.left != null) {
+            if (!deleteNode.leftIsNIL()) {
                 TreeNode<T> prev = deleteNode.left.getMaxNode();
                 swapT(prev, deleteNode);
                 deleteNode = searchNode(deleteNode.left, t);
@@ -65,9 +91,9 @@ public class RedBlackTree<T extends Comparable<T>> {
         TreeNode<T> retNode = null;
         if (node.t.compareTo(t) == 0) {
             retNode = node;
-        } else if (node.t.compareTo(t) > 0 && node.left != null) {
+        } else if (node.t.compareTo(t) > 0 && !node.leftIsNIL()) {
             retNode = searchNode(node.left, t);
-        } else if (node.right != null) {
+        } else if (!node.rightIsNIL()) {
             retNode = searchNode(node.right, t);
         }
         return retNode;
@@ -77,14 +103,14 @@ public class RedBlackTree<T extends Comparable<T>> {
         if (node.t.compareTo(t) == 0) {
             throw new UnsupportedOperationException("已存在相同元素：" + t);
         } else if (node.t.compareTo(t) > 0) {
-            if (node.left == null) {
-                node.left = new TreeNode<>(t, node);
+            if (node.leftIsNIL()) {
+                node.addNodeLeft(t);
             } else {
                 addNode(node.left, t);
             }
         } else {
-            if (node.right == null) {
-                node.right = new TreeNode<>(t, node);
+            if (node.rightIsNIL()) {
+                node.addNodeRight(t);
             } else {
                 addNode(node.right, t);
             }
@@ -129,7 +155,7 @@ public class RedBlackTree<T extends Comparable<T>> {
                         removeT = root.t;
                         root = null;
                     } else {
-                        TreeNode<T> swapNode = root.left != null ? root.left.getMaxNode() : root.right.getMinNode();
+                        TreeNode<T> swapNode = !root.leftIsNIL() ? root.left.getMaxNode() : root.right.getMinNode();
                         swapT(swapNode, root);
                         deleteNode(swapNode.parent, swapNode, t);
                     }
