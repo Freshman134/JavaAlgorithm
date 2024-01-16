@@ -50,6 +50,10 @@ public class RedBlackTree<T extends Comparable<T>> {
             return right == null || right.t == null;
         }
 
+        boolean isRed() {
+            return red;
+        }
+
         TreeNode<T> getMaxNode() {
             return right == null ? this : right.getMaxNode();
         }
@@ -58,7 +62,7 @@ public class RedBlackTree<T extends Comparable<T>> {
             return left == null ? this : left.getMinNode();
         }
 
-        static <T extends Comparable<T>> void setNIL(TreeNode<T> node) {
+        void setNIL(TreeNode<T> node) {
             node.left = new TreeNode<>(null, node);
             node.right = new TreeNode<>(null, node);
         }
@@ -115,12 +119,53 @@ public class RedBlackTree<T extends Comparable<T>> {
                 addNode(node.right, t);
             }
         }
+        fixNode(node);
     }
 
     private void swapT(TreeNode<T> node1, TreeNode<T> node2) {
         T tmp = node1.t;
         node1.t = node2.t;
         node2.t = tmp;
+    }
+
+    private void fixNode(TreeNode<T> node) {
+        if (node.isRed() && (node.left.isRed() || node.right.isRed())) {
+            TreeNode<T> parent = node.parent;
+            if (parent == null) {
+                if (node.left.isRed()) {
+                    root = rightRotate(node);
+                } else {
+                    root = leftRotate(node);
+                }
+                root.red = false;
+                return;
+            }
+            boolean isLeft = parent.left == node;
+            if (isLeft ? parent.right.isRed() : parent.left.isRed()) {
+                flipColor(parent);
+                return;
+            }
+            TreeNode<T> newNode;
+            if (isLeft && node.left.isRed()) {
+                // LL
+                newNode = rightRotate(node);
+                newNode.red = false;
+                parent.left = newNode;
+            } else if (!isLeft && node.right.isRed()) {
+                // RR
+                newNode = leftRotate(node);
+                newNode.red = false;
+                parent.right = newNode;
+            } else if (isLeft && node.right.isRed()) {
+                // LR
+                parent.left = leftRotate(node);
+                parent.red = true;
+            } else {
+                // RL
+                parent.right = rightRotate(node);
+                parent.red = true;
+            }
+        }
     }
 
     private TreeNode<T> leftRotate(TreeNode<T> node) {
@@ -139,6 +184,12 @@ public class RedBlackTree<T extends Comparable<T>> {
         node.parent = retNode;
         retNode.right = node;
         return retNode;
+    }
+
+    private void flipColor(TreeNode<T> node) {
+        node.red = true;
+        node.left.red = false;
+        node.right.red = false;
     }
 
     public boolean isEmpty() {
