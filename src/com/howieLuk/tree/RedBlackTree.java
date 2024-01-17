@@ -76,18 +76,6 @@ public class RedBlackTree<T extends Comparable<T>> {
             return new TreeNode<>(null, parent);
         }
 
-        public void setParent(TreeNode<T> parent) {
-            if (parent != null) {
-                Integer val = (Integer) parent.t;
-                if (val == 432) {
-                    System.out.println();
-                }
-            } else {
-                System.out.println();
-            }
-            this.parent = parent;
-        }
-
         @Override
         public String toString() {
             String color = red ? "red" : "black";
@@ -179,50 +167,40 @@ public class RedBlackTree<T extends Comparable<T>> {
     private void fixNode(TreeNode<T> node) {
         if (node.isRed() && (node.left.isRed() || node.right.isRed())) {
             TreeNode<T> parent = node.parent;
-            if (parent == null) {
-                if (node.left.isRed()) {
-                    root = rightRotate(node);
-                } else {
-                    root = leftRotate(node);
-                }
-                root.red = false;
-                return;
-            }
-            boolean isLeft = parent.left == node;
-            if (isLeft ? parent.right.isRed() : parent.left.isRed()) {
+            TreeNode<T> newNode;
+            if (parent.left == node ? parent.right.isRed() : parent.left.isRed()) {
                 flipColor(parent);
                 return;
-            }
-            TreeNode<T> newNode = null;
-            boolean nodeInParentLeft = parent.left == node;
-            if (node.left.isRed() && node.left.left.isRed()) { // LL
-                newNode = rightRotate(node);
+            } else if (parent.left == node && node.left.isRed()) { // LL
+                newNode = rightRotate(parent);
                 newNode.red = false;
-                parent.left = newNode;
-            } else if (node.right.isRed() && node.right.right.isRed()) { // RR
-                newNode = leftRotate(node);
+                newNode.right.red = true;
+            } else if (parent.left == node && node.right.isRed()) { // LR
+                parent.left = leftRotate(node);
+                parent.left.red = false;
+                newNode = rightRotate(parent);
+                newNode.right.red = true;
+            } else if (parent.right == node && node.left.isRed()) { // RL
+                parent.right = rightRotate(node);
+                parent.right.red = false;
+                newNode = leftRotate(parent);
+                newNode.left.red = true;
+            } else { // RR
+                newNode = leftRotate(parent);
                 newNode.red = false;
-                parent.right = newNode;
+                newNode.left.red = true;
             }
-            if (newNode != null) {
-                if (nodeInParentLeft) {
-                    parent.left = newNode;
-                } else {
-                    parent.right = newNode;
-                }
+            if (newNode.parent == null) {
+                root = newNode;
                 return;
             }
-            if ((isLeft && node.left.isRed()) || (!isLeft && node.right.isRed())) { // LL、RR
-                parent.red = true;
-            } else if (isLeft && node.right.isRed()) { // LR
-                parent.left = leftRotate(node);
-                parent.red = true;
-            } else { // RL
-                parent.right = rightRotate(node);
-                parent.red = true;
+            boolean parentInGrandParentLeft = newNode.parent.left == parent;
+            if (parentInGrandParentLeft) {
+                newNode.parent.left = newNode;
+            } else {
+                newNode.parent.right = newNode;
             }
         }
-        testCycle(new ArrayList<>(), root);
     }
 
     private void deleteFixNode(TreeNode<T> fixNode, TreeNode<T> deletedNode) {
@@ -273,8 +251,8 @@ public class RedBlackTree<T extends Comparable<T>> {
     private TreeNode<T> leftRotate(TreeNode<T> node) {
         TreeNode<T> retNode = node.right;
         node.right = retNode.left;
-        retNode.setParent(node.parent);
-        node.setParent(retNode);
+        retNode.parent = node.parent;
+        node.parent = retNode;
         node.right.parent = node;
         retNode.left = node;
         return retNode;
@@ -283,8 +261,8 @@ public class RedBlackTree<T extends Comparable<T>> {
     private TreeNode<T> rightRotate(TreeNode<T> node) {
         TreeNode<T> retNode = node.left;
         node.left = retNode.right;
-        retNode.setParent(node.parent);
-        node.setParent(retNode);
+        retNode.parent = node.parent;
+        node.parent = retNode;
         node.left.parent = node;
         retNode.right = node;
         return retNode;
@@ -382,22 +360,23 @@ public class RedBlackTree<T extends Comparable<T>> {
 
     public static void main(String[] args) {
         //                                                  1
-        Integer[] arr = new Integer[]{973, 6, 432, 939, 17, 484, 58, 245};
+//        Integer[] arr = new Integer[]{973, 6, 432, 939, 17, 484, 58, 245};
+//        Integer[] arr = new Integer[]{415, 967, 438, 532, 448, 512, 740, 68, 501,
+//                977, 109, 553, 139, 807, 493, 356, 912, 261, 980, 163};
+//        Integer[] arr = new Integer[]{221, 84, 912, 591, 436, 929, 357, 684, 552, 94, 925, 622, 61, 407, 933,
+//                855, 54, 886, 173, 756, 849, 974, 125, 7, 336, 66, 203, 375, 977, 88, 655, 422, 576, 575, 870,
+//                495, 698, 274, 914, 257, 202, 376, 211, 45, 689, 249, 918, 472, 6};
         List<Integer> list = new ArrayList<>();
         RedBlackTree<Integer> tree = new RedBlackTree<>();
         Random random = new Random();
-        for (int i = 0; i < arr.length; i++) {
-            Integer e = arr[i];
-            if (e == 484) {
-                System.out.println();
-            }
+        for (int i = 0; i < 500; i++) {
+            Integer e = random.nextInt(1000);
             if (!list.contains(e)) {
                 list.add(e);
                 tree.add(e);
             }
-            System.out.println("i:" + e);
-            TestUtil.constTest(tree, list);
         }
+        System.out.println(list);
         tree.infix(tree.root);
         System.out.println();
         System.out.println("size:" + tree.count);
@@ -417,13 +396,15 @@ class TestUtil {
 
     static void testTree(RedBlackTree<Integer> tree) {
         RedBlackTree.TreeNode<Integer> node = tree.root;
-        while (!node.leftIsNIL()) {
+        while (node.t != null) {
             if (!node.isRed()) {
                 n++;
             }
             node = node.left;
         }
         infixTest(tree.root, 0);
+        System.out.println();
+        System.out.println("dept:" + n);
         reset();
     }
 
