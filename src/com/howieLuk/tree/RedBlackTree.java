@@ -23,7 +23,8 @@ public class RedBlackTree<T extends Comparable<T>> {
 
         TreeNode(T t) {
             this.t = t;
-            setNIL(this);
+            left = new TreeNode<>(null, this);
+            right = new TreeNode<>(null, this);
         }
 
         TreeNode(T t, TreeNode<T> parent) {
@@ -34,13 +35,15 @@ public class RedBlackTree<T extends Comparable<T>> {
         void addNodeLeft(T t) {
             left.t = t;
             left.red = true;
-            setNIL(left);
+            left.left = new TreeNode<>(null, left);
+            left.right = new TreeNode<>(null, left);
         }
 
-        void  addNodeRight(T t) {
+        void addNodeRight(T t) {
             right.t = t;
             right.red = true;
-            setNIL(right);
+            right.left = new TreeNode<>(null, right);
+            right.right = new TreeNode<>(null, right);
         }
 
         boolean isLeaf() {
@@ -60,20 +63,18 @@ public class RedBlackTree<T extends Comparable<T>> {
         }
 
         TreeNode<T> getMaxNode() {
-            return right == null ? this : right.getMaxNode();
+            return rightIsNIL() ? this : right.getMaxNode();
         }
 
         TreeNode<T> getMinNode() {
-            return left == null ? this : left.getMinNode();
+            return leftIsNIL() ? this : left.getMinNode();
         }
 
-        void setNIL(TreeNode<T> parent) {
-            parent.left = new TreeNode<>(null, parent);
-            parent.right = new TreeNode<>(null, parent);
-        }
-
-        TreeNode<T> getNIL(TreeNode<T> parent) {
-            return new TreeNode<>(null, parent);
+        void setNIL() {
+            t = null;
+            left = new TreeNode<>(null, this);
+            right = new TreeNode<>(null, this);
+            red = false;
         }
 
         @Override
@@ -88,11 +89,12 @@ public class RedBlackTree<T extends Comparable<T>> {
     private void deleteNode(TreeNode<T> parent, TreeNode<T> deleteNode, T t) {
         if (deleteNode.isLeaf()) {
             boolean deleteNodeIsRed = deleteNode.isRed();
-            if (parent.left == deleteNode) {
-                parent.left = parent.getNIL(parent);
-            } else {
-                parent.right = parent.getNIL(parent);
-            }
+            deleteNode.setNIL();
+//            if (parent.left == deleteNode) {
+//                parent.left.setNIL(parent);
+//            } else {
+//                parent.right.setNIL(parent);
+//            }
             if (!deleteNodeIsRed) {
                 deleteFixNode(parent, deleteNode);
             }
@@ -204,14 +206,25 @@ public class RedBlackTree<T extends Comparable<T>> {
     }
 
     private void deleteFixNode(TreeNode<T> fixNode, TreeNode<T> deletedNode) {
-        boolean broIsLeft = fixNode.left == deletedNode;
-        TreeNode<T> broNode = broIsLeft ? fixNode.right : fixNode.left;
+        boolean broIsLeft = fixNode.left != deletedNode;
+        TreeNode<T> broNode = broIsLeft ? fixNode.left : fixNode.right;
         TreeNode<T> newNode = null, parent = fixNode.parent;
         if (parent != null) {
             if (!fixNode.isRed() && !broNode.isRed()) {
-                broNode.red = true;
-                deleteFixNode(parent, fixNode);
-                return;
+                if (broNode.left.isRed() || broNode.right.isRed()) {
+                    if (broIsLeft) {
+                        newNode = rotate(fixNode, broNode, broNode.left.isRed() ? broNode.left : broNode.right);
+                        newNode.left.red = false;
+                    } else {
+                        newNode = rotate(fixNode, broNode, broNode.right.isRed() ? broNode.right : broNode.left);
+                        newNode.right.red = false;
+                    }
+                    newNode.red = false;
+                } else {
+                    broNode.red = true;
+                    deleteFixNode(parent, fixNode);
+                    return;
+                }
             }
             if (fixNode.isRed()) {
                 if (!broNode.left.isRed() && !broNode.right.isRed()) {
@@ -223,28 +236,55 @@ public class RedBlackTree<T extends Comparable<T>> {
                 } else {
                     newNode = rotate(fixNode, broNode, broNode.right.isRed() ? broNode.right : broNode.left);
                 }
+                flipColor(newNode);
             } else if (broNode.isRed()) {
-                if (fixNode.left == deletedNode) {
+                // 这里处理有问题
+                TreeNode<T> newBroNode, newFixNode;
+                if (fixNode.left != deletedNode) {
                     newNode = rightRotate(fixNode);
-                    newNode.right.red = true;
+                    newNode.red = false;
+                    newBroNode = fixNode.left;
+                    if (newBroNode.left.isRed() || newBroNode.right.isRed()) {
+                        newFixNode = rotate(fixNode, newBroNode,
+                                newBroNode.left.isRed() ? newBroNode.left : newBroNode.right);
+                        flipColor(newFixNode);
+                        newNode.right = newFixNode;
+                        newFixNode.parent = newNode;
+                    } else {
+                        newBroNode.red = true;
+                    }
                 } else {
                     newNode = leftRotate(fixNode);
-                    newNode.left.red = true;
+                    newNode.red = false;
+                    newBroNode = fixNode.right;
+                    if (newBroNode.left.isRed() || newBroNode.right.isRed()) {
+                        newFixNode = rotate(fixNode, newBroNode,
+                                newBroNode.left.isRed() ? newBroNode.left : newBroNode.right);
+                        flipColor(newFixNode);
+                        newNode.left = newFixNode;
+                        newFixNode.parent = newNode;
+                    } else {
+                        newBroNode.red = true;
+                    }
                 }
             }
         }
         if (newNode != null) { // not root
             if (parent.left == fixNode) {
                 parent.left = newNode;
+                newNode.parent = parent;
             } else {
                 parent.right = newNode;
+                newNode.parent = parent;
             }
         } else if (!broNode.left.isRed() && !broNode.right.isRed()) {
             broNode.red = true;
         } else if (broNode.left.isRed()) {
             root = rotate(fixNode, broNode, broNode.left);
+            root.right.red = false;
         } else {
             root = rotate(fixNode, broNode, broNode.right);
+            root.left.red = false;
         }
     }
 
@@ -314,8 +354,8 @@ public class RedBlackTree<T extends Comparable<T>> {
             TreeNode<T> deleteNode = searchNode(root, t);
             if (deleteNode != null) {
                 if (deleteNode.parent == null) {
+                    removeT = root.t;
                     if (root.isLeaf()) {
-                        removeT = root.t;
                         root = null;
                     } else {
                         TreeNode<T> swapNode = !root.leftIsNIL() ? root.left.getMaxNode() : root.right.getMinNode();
@@ -323,8 +363,9 @@ public class RedBlackTree<T extends Comparable<T>> {
                         deleteNode(swapNode.parent, swapNode, t);
                     }
                 } else {
-                    deleteNode(deleteNode.parent, deleteNode, t);
                     removeT = deleteNode.t;
+                    deleteNode(deleteNode.parent, deleteNode, t);
+                    root.red = false;
                 }
                 count--;
             }
@@ -342,6 +383,15 @@ public class RedBlackTree<T extends Comparable<T>> {
         count++;
     }
 
+    public T get(T t) {
+        if (isEmpty()) {
+            return null;
+        } else {
+            TreeNode<T> node = searchNode(root, t);
+            return node == null ? null : node.t;
+        }
+    }
+
     private void infix(TreeNode<T> node) {
         if (node.isLeaf()) {
             System.out.print(node.t + "\t");
@@ -357,7 +407,6 @@ public class RedBlackTree<T extends Comparable<T>> {
     }
 
 
-
     public static void main(String[] args) {
         //                                                  1
 //        Integer[] arr = new Integer[]{973, 6, 432, 939, 17, 484, 58, 245};
@@ -369,20 +418,35 @@ public class RedBlackTree<T extends Comparable<T>> {
         List<Integer> list = new ArrayList<>();
         RedBlackTree<Integer> tree = new RedBlackTree<>();
         Random random = new Random();
-        for (int i = 0; i < 500; i++) {
+        for (int i = 0; i < 1000; i++) {
             Integer e = random.nextInt(1000);
             if (!list.contains(e)) {
                 list.add(e);
                 tree.add(e);
             }
         }
-        System.out.println(list);
-        tree.infix(tree.root);
         System.out.println();
         System.out.println("size:" + tree.count);
         System.out.println(tree.isEmpty());
         TestUtil.testTree(tree);
-        System.out.println();
+        TestUtil.constTest(tree, list);
+
+        // delete test
+        List<Integer> deleteList = new ArrayList<>();
+        List<Integer> returnTestList = new ArrayList<>();
+        for (int i = 0; i < list.size(); i++) {
+            Integer e = list.get(i);
+            if (tree.get(e) != null) {
+                System.out.println(e + "\t");
+                deleteList.add(e);
+                Integer ret = tree.remove(e);
+                returnTestList.add(ret);
+                TestUtil.testTree(tree);
+            }
+            System.out.println(deleteList);
+            TestUtil.deleteTest(tree, deleteList, returnTestList);
+            System.out.println();
+        }
     }
 
 }
@@ -395,6 +459,9 @@ class TestUtil {
     }
 
     static void testTree(RedBlackTree<Integer> tree) {
+        if (tree.isEmpty()) {
+            return;
+        }
         RedBlackTree.TreeNode<Integer> node = tree.root;
         while (node.t != null) {
             if (!node.isRed()) {
@@ -402,39 +469,64 @@ class TestUtil {
             }
             node = node.left;
         }
-        infixTest(tree.root, 0);
+        infixTest(tree.root, null, 0);
         System.out.println();
         System.out.println("dept:" + n);
         reset();
     }
 
-    static void infixTest(RedBlackTree.TreeNode<Integer> node, int testN) {
+    static void infixTest(RedBlackTree.TreeNode<Integer> node, RedBlackTree.TreeNode<Integer> parent, int testN) {
         if (!node.isRed()) {
             testN++;
         } else if (node.left.isRed() || node.right.isRed()) {
             System.out.print(node.t + "\t");
             throw new RuntimeException("相同红节点");
         }
+        if (parent != node.parent) {
+            throw new RuntimeException(node.t.toString());
+        }
         if (node.isLeaf()) {
             System.out.print(node.t + "\t");
+            if (node.left.parent != node || node.right.parent != node) {
+                throw new RuntimeException(node.t.toString());
+            }
             if (n != testN) {
                 throw new RuntimeException("黑节点路径不一致");
             }
             return;
         }
         if (!node.leftIsNIL()) {
-            infixTest(node.left, testN);
+            infixTest(node.left, node, testN);
         }
         System.out.print(node.t + "\t");
         if (!node.rightIsNIL()) {
-            infixTest(node.right, testN);
+            infixTest(node.right, node, testN);
         }
     }
 
     static void constTest(RedBlackTree<Integer> tree, List<Integer> list) {
         for (Integer integer : list) {
-            RedBlackTree.TreeNode<Integer> node = tree.searchNode(tree.root, integer);
-            System.out.print(node.t + "\t");
+            Integer integer1 = tree.get(integer);
+            if (integer1 == null) {
+                throw new RuntimeException(String.valueOf(integer1));
+            }
+            System.out.print(integer1 + "\t");
+        }
+    }
+
+    static void deleteTest(RedBlackTree<Integer> tree, List<Integer> deleteList, List<Integer> returnTestList) {
+        for (Integer integer : deleteList) {
+            Integer integer1 = tree.get(integer);
+            if (integer1 != null) {
+                throw new RuntimeException(String.valueOf(integer1));
+            }
+        }
+        int testI = 0;
+        for (Integer integer : deleteList) {
+            Integer integer1 = returnTestList.get(testI++);
+            if (!integer.equals(integer1)) {
+                throw new RuntimeException(String.valueOf(integer) + " " + String.valueOf(integer1));
+            }
         }
     }
 
