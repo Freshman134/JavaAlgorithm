@@ -87,16 +87,22 @@ public class GraphMatrix<T> implements Graph<T> {
         }
         if (weight > 0 && matrix[v1][v2] == 0 && matrix[v2][v1] == 0) { // 只有该关系不存在时才添加边的数量
             edgesNum++;
-        } else if (weight == 0 && matrix[v1][v2] != 0 && matrix[v2][v1] == 0) { // 只有该关系完全被删除时，才减少边的数量
+        } else if (weight == 0) { // 无向图需要
             edgesNum--;
         }
+//        else if (weight == 0 && matrix[v1][v2] != 0 && matrix[v2][v1] == 0) { // 只有该关系完全被删除时，才减少边的数量
+//            edgesNum--;
+//        }
         matrix[v1][v2] = weight;
+        matrix[v2][v1] = weight; // 无向图需要
         return true;
     }
 
     @Override
     public boolean removeEdge(int v1, int v2) {
-        return setEdge(v1, v2, 0) && setEdge(v2, v1, 0);
+        return setEdge(v1, v2, 0)
+//                && setEdge(v2, v1, 0) // 有向图需要
+                ;
     }
 
     @Override
@@ -144,6 +150,17 @@ public class GraphMatrix<T> implements Graph<T> {
     @Override
     public int getWeight(int v1, int v2) {
         return matrix[v1][v2];
+    }
+
+    @Override
+    public List<Integer> getRelationVertex(int v) {
+        List<Integer> list = new LinkedList<>();
+        for (int i = 0; i < matrix[v].length; i++) {
+            if (matrix[v][i] != 0) {
+                list.add(i);
+            }
+        }
+        return list;
     }
 
     @Override

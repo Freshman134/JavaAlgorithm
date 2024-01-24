@@ -1,5 +1,7 @@
 package com.howieLuk.graph;
 
+import java.util.List;
+
 /**
  * @Deacription TODO
  * @Author HowieLuk
@@ -29,6 +31,8 @@ public interface Graph<T> {
     int getVertexIndex(T t);
 
     int getWeight(int v1, int v2);
+
+    List<Integer> getRelationVertex(int v);
 
     void showGraphBy(int v);
 
