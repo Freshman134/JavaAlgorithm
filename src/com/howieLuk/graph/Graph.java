@@ -16,6 +16,8 @@ public interface Graph<T> {
 
     T removeVertex(int v);
 
+    List<Integer> getRelateVertexIndByInd(int verInd);
+
     boolean setEdge(int v1, int v2, int weight);
 
     boolean removeEdge(int v1, int v2);
@@ -37,5 +39,7 @@ public interface Graph<T> {
     void showGraphBy(int v);
 
     void showGraph();
+
+    boolean emptyGraph();
 
 }

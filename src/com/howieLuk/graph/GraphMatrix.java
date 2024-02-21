@@ -76,6 +76,12 @@ public class GraphMatrix<T> implements Graph<T> {
         return retV.val;
     }
 
+    @Override
+    public List<Integer> getRelateVertexIndByInd(int verInd) {
+
+        return null;
+    }
+
 
     @Override
     public boolean setEdge(int v1, int v2, int weight) {
@@ -192,6 +198,11 @@ public class GraphMatrix<T> implements Graph<T> {
                 bfs(visited, vertex.ind);
             }
         }
+    }
+
+    @Override
+    public boolean emptyGraph() {
+        return vertices.isEmpty();
     }
 
     private void dfs(boolean[] visited, int v) {
