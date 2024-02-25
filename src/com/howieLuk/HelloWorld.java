@@ -1,5 +1,9 @@
 package com.howieLuk;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.stream.IntStream;
+
 /**
  * @Deacription TODO
  * @Author HowieLuk
@@ -10,9 +14,12 @@ public class HelloWorld {
 
     public static void main(String[] args) {
 //        System.out.println("hello, world!");
-        int[] nums1 = new int[]{0};
-        int[] nums2 = new int[]{1};
-        Solution.merge(nums1, 0, nums2, 1);
+//        int[] nums1 = new int[]{0};
+//        int[] nums2 = new int[]{1};
+//        Solution.merge(nums1, 0, nums2, 1);
+        Map<Integer, Integer> testMap = new HashMap<>();
+        IntStream.range(0, 10).forEach(i -> testMap.put(i, i));
+        testMap.keySet().add(11);
     }
 }
 

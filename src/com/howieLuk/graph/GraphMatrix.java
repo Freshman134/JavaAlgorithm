@@ -4,6 +4,8 @@ package com.howieLuk.graph;
 //import com.howieLuk.queue.Queue;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * @Deacription 邻接矩阵有向图
@@ -11,58 +13,56 @@ import java.util.*;
  * @Date 2024/1/19 21:24
  * @Version 1.0
  **/
-public class GraphMatrix<T> implements Graph<T> {
+public class GraphMatrix<K, V> implements Graph<K, V> {
 
     private static final int INIT_SIZE = 1 << 4;
 
     private int[][] matrix = new int[INIT_SIZE][INIT_SIZE];
 
-    private List<Vertex> vertices = new ArrayList<>();
-    {
-        for (int i = 0; i < matrix.length; i++) {
-            vertices.add(null);
-        }
-    }
+    private Map<K, MatrixVertex> verticesMap = new HashMap<>();
 
-    private List<Integer> canUseInd = new LinkedList<>();
+    private Queue<Integer> canUseInd = new LinkedList<>();
     {
-        for (int i = 0; i < matrix.length; i++) {
-            canUseInd.add(i);
-        }
+        IntStream.range(0, INIT_SIZE - 1).forEach(canUseInd::add);
     }
 
     private int verticesNum = 0;
 
     private int edgesNum = 0;
 
-    private class Vertex {
-        T val;
+    private class MatrixVertex implements Vertex<K, V> {
+        V val;
         int ind;
+        K key;
 
-        public Vertex(T val, int ind) {
+        public MatrixVertex(K key, V val, int ind) {
+            this.key = key;
             this.val = val;
             this.ind = ind;
         }
-    }
 
-    @Override
-    public void insertVertex(T t) {
-        if (canUseInd.isEmpty()) {
-            throw new RuntimeException("邻接矩阵已满");
-        }
-        Vertex v = new Vertex(t, canUseInd.remove(0));
-        vertices.set(v.ind, v);
-        verticesNum++;
-    }
 
-    @Override
-    public boolean putVertexVal(int v, T t) {
-        Vertex vertex = vertices.get(v);
-        if (vertex == null) {
-            return false;
+        @Override
+        public K getKey() {
+            return key;
         }
-        vertex.val = t;
-        return true;
+
+        @Override
+        public V getVal() {
+            return val;
+        }
+
+        @Override
+        public void setVal(V v) {
+            this.val = v;
+        }
+
+        @Override
+        public String toString() {
+            return "{key:" + key + "," +
+                    "val:" + val +
+                    "}";
+        }
     }
 
     @Override
@@ -78,7 +78,6 @@ public class GraphMatrix<T> implements Graph<T> {
 
     @Override
     public List<Integer> getRelateVertexIndByInd(int verInd) {
-
         return null;
     }
 
@@ -128,8 +127,38 @@ public class GraphMatrix<T> implements Graph<T> {
     }
 
     @Override
-    public int getSizeOfVertex() {
+    public void add(K k, V v) {
+        if (getSizeOfVertices() >= INIT_SIZE || canUseInd.isEmpty()) {
+            throw new RuntimeException("邻接矩阵已满");
+        }
+        MatrixVertex vertex = new MatrixVertex(k, v, canUseInd.poll());
+        verticesMap.put(vertex.key, vertex);
+        verticesNum++;
+    }
+
+    @Override
+    public Collection<K> getVerticesKey() {
+        return verticesMap.keySet();
+    }
+
+    @Override
+    public int getSizeOfVertices() {
         return verticesNum;
+    }
+
+    @Override
+    public void setEdge(K k1, K k2, int weight) {
+
+    }
+
+    @Override
+    public Collection<Edge<K, V>> getEdges(K k) {
+        return null;
+    }
+
+    @Override
+    public boolean removeEdge(K k1, K k2) {
+        return false;
     }
 
     @Override
@@ -138,23 +167,16 @@ public class GraphMatrix<T> implements Graph<T> {
     }
 
     @Override
-    public T getVal(int v) {
-        Vertex vertex = vertices.get(v);
-        return vertex == null ? null : vertex.val;
+    public void showGraphBy(K k) {
+
     }
 
     @Override
-    public int getVertexIndex(T t) {
-        for (Vertex vertex : vertices) {
-            if (vertex != null && t.equals(vertex.val)) {
-                return vertex.ind;
-            }
-        }
-        return -1;
+    public boolean isEmpty() {
+        return false;
     }
 
-    @Override
-    public int getWeight(int v1, int v2) {
+    private int getEdgeWeightByInd(int v1, int v2) {
         return matrix[v1][v2];
     }
 
