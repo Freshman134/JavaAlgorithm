@@ -1,12 +1,12 @@
 package com.howieLuk.graph;
 
-public interface Edge<K, V> {
+public interface Edge<T> {
 
     boolean isDiEdge();
 
     int getWeight();
 
-    Vertex<K, V> getFrom();
+    Vertex<T> getFrom();
 
-    Vertex<K, V> getTo();
+    Vertex<T> getTo();
 }

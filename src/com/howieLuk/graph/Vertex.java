@@ -1,11 +1,17 @@
 package com.howieLuk.graph;
 
-public interface Vertex<K, V> {
+import java.util.Collection;
 
-    K getKey();
+public interface Vertex<T> {
 
-    V getVal();
+    T getVal();
 
-    void setVal(V v);
+    void setVal(T t);
+
+    /**
+     * 获取该顶点的所有边
+     * @return 边的集合
+     */
+    Collection<Edge<T>> getRelateEdges();
 
 }
